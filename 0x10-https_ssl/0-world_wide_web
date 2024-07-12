@@ -2,18 +2,44 @@
 # Usage: ./1-world_wide_web <domain> <subdomain>
 # Display information about subdomains.
 
-domain_information () {
-    line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
-    echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
+# Function to query and display information about a subdomain
+query_subdomain() {
+    local domain=$1
+    local subdomain=$2
+    local full_domain="${subdomain}.${domain}"
+
+    # Perform a DNS query
+    local result=$(dig +short "${full_domain}")
+    local record_type="A"
+
+    if [[ -z "${result}" ]]; then
+        echo "The subdomain ${subdomain} does not exist or has no records."
+    else
+        # Display the information
+        echo "The subdomain ${subdomain} is an ${record_type} record and points to ${result}"
+    fi
 }
 
-if [ "$#" == 1 ]
-then
-  domain_information "$1" "www"
-  domain_information "$1" "lb-01"
-  domain_information "$1" "web-01"
-  domain_information "$1" "web-02"
-elif [ "$#" == 2 ]
-then
-  domain_information "$1" "$2"
-fi
+# Main script logic
+main() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: $0 domain [subdomain]"
+        exit 1
+    fi
+
+    local domain=$1
+    local subdomain=$2
+
+    if [[ -z "${subdomain}" ]]; then
+        # No subdomain provided, query the default subdomains
+        for sub in www lb-01 web-01 web-02; do
+            query_subdomain "${domain}" "${sub}"
+        done
+    else
+        # Query the specified subdomain
+        query_subdomain "${domain}" "${subdomain}"
+    fi
+}
+
+# Execute the main function
+main "$@"
