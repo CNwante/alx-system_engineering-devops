@@ -14,7 +14,7 @@ def top_ten(subreddit):
         None: Prints titles to the console or None if the subreddit is invalid.
     """
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {"User-Agent": "Mozilla/5.0 "}
+    headers = {"User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/CNwante)"}
 
     response = requests.get(url, headers=headers, allow_redirects=False)
     if response.status_code == 200:
