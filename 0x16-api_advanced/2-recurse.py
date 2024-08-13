@@ -5,15 +5,16 @@ import requests
 
 def recurse(subreddit, hot_list=[], after="", count=0):
     """
-    Recursively fetches and returns a list of all hot article titles from a given subreddit.
+    Recursively returns a list of all hot posts titles from a given subreddit.
 
     Args:
         subreddit (str): The name of the subreddit to query.
-        hot_list (list): Accumulates the titles of hot articles across recursive calls.
+        hot_list (list): Stores the titles of hot posts across recursive calls.
         after (str): The pagination token to get the next set of posts.
 
     Returns:
-        list: A list of titles of all hot articles from the subreddit, or None if the subreddit is invalid.
+        list: A list of titles of all hot articles from the subreddit, or
+        None if the subreddit is invalid.
     """
     url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
     headers = {
