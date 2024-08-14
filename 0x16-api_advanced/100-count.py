@@ -9,6 +9,13 @@ def count_words(subreddit, word_list, instances=None, after="", count=0):
     if instances is None:
         instances = {}
 
+    # Normalize word_list to handle duplicates
+    normalized_word_list = []
+    for word in word_list:
+        word_lower = word.lower()
+        if word_lower not in normalized_word_list:
+            normalized_word_list.append(word_lower)
+
     url = "https://www.reddit.com/r/{}/hot/.json".format(subreddit)
     headers = {"User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/CNwante)"}
     params = {"after": after, "count": count, "limit": 100}
@@ -32,11 +39,10 @@ def count_words(subreddit, word_list, instances=None, after="", count=0):
 
     for c in data.get("children"):
         title = c.get("data").get("title").lower().split()
-        for word in word_list:
-            word_lower = word.lower()
-            times = sum(1 for t in title if t == word_lower)
+        for word in normalized_word_list:
+            times = sum(1 for t in title if t == word)
             if times > 0:
-                instances[word_lower] = instances.get(word_lower, 0) + times
+                instances[word] = instances.get(word, 0) + times
 
     if after is None:
         if len(instances) > 0:
